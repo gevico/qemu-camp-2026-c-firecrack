@@ -13,9 +13,32 @@ typedef struct {
 Student students[MAX_STUDENTS];
 Student temp[MAX_STUDENTS];
 
+void merge_(int l, int mid, int r) {
+    int i = l, j = mid + 1;
+    int k = l;
+    while (i <= mid && j <= r) {
+        if (students[i].score >= students[j].score) {
+            temp[k++] = students[i++];
+        } else {
+            temp[k++] = students[j++];
+        }
+        
+    }
+    while (i <= mid) temp[k++] = students[i++];
+    while (j <= r) temp[k++] = students[j++];
+
+    int len = r - l + 1;
+    memcpy(&students[l],&temp[l], len * sizeof(Student));
+}
+
 void merge_sort(int left, int right) {
-    // TODO: 在这里添加你的代码
-    // I AM NOT DONE
+    if (left >= right) return;
+    int mid = left + ((right - left) >> 1);
+    merge_sort(left, mid);
+    merge_sort(mid + 1, right);
+
+    if (students[mid].score >= students[mid + 1].score) return;
+    merge_(left, mid, right);
 }
 
 int main(void) {

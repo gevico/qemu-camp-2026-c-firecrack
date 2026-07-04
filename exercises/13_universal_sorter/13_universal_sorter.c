@@ -28,7 +28,7 @@ void processFile(const char *filename) {
         return;
     }
 
-    int choice, n;
+    int choice, n; // choice 1-int, 2-float, 3-str
     if (fscanf(fin, "%d", &choice) != 1 || fscanf(fin, "%d", &n) != 1) {
         printf("错误: 文件 %s 格式不正确\n", filename);
         fclose(fin);
@@ -36,12 +36,55 @@ void processFile(const char *filename) {
     }
 
     if (n > 20) n = 20;  // 最多支持20个元素
-
+    
+    //
+    
     printf("=== 处理数据来自: %s ===\n", filename);
 
     switch (choice) {
-        // TODO: 在这里添加你的代码
-        // I AM NOT DONE
+        case 1: {
+            // 分配内存，并读取数据
+            int* arr = (int*)malloc(n * sizeof(int));
+            if (!arr) { fclose(fin); return;}
+            for (int i = 0; i < n; ++i) {
+                if (fscanf(fin, "%d", &arr[i]) != 1) {
+                    n = i;
+                    break;
+                }
+            }
+
+            // 调用排序
+            sort(arr, n, sizeof(int), compareInt);
+
+            for (int i = 0; i < n; ++i) {
+                if (i != 0)
+                    printf(" %d", arr[i]);
+                else 
+                    printf("%d", arr[i]);
+            }
+        }
+        case 2: {
+            // 分配内存，并读取数据
+            float* arr = (float*)malloc(n * sizeof(float));
+            if (!arr) { fclose(fin); return;}
+            for (int i = 0; i < n; ++i) {
+                if (fscanf(fin, "%f", &arr[i]) != 1) {
+                    n = i;
+                    break;
+                }
+            }
+
+            // 调用排序
+            sort(arr, n, sizeof(int), compareFloat);
+
+            for (int i = 0; i < n; ++i) {
+                if (i != 0)
+                    printf(" %f", arr[i]);
+                else 
+                    printf("%f", arr[i]);
+            }
+        }
+            
     }
 
     fclose(fin);

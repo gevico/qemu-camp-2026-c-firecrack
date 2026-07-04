@@ -8,6 +8,8 @@ typedef struct {
     int age;
 } Student;
 
+#define MAX_LINE 256
+
 int main() {
     FILE *file = fopen("students.txt", "r");
     if (file == NULL) {
@@ -16,11 +18,24 @@ int main() {
     }
     
     Student *students[3];
+    char line[MAX_LINE];
     
     for (int i = 0; i < 3; i++) 
     {
-	    // TODO: 在这里添加你的代码
-        // I AM NOT DONE
+	    if (fgets(line, sizeof(line), file) != NULL) {
+            students[i] = malloc(sizeof(Student));
+            if (students[i]== NULL) break;
+
+            line[strcspn(line, "\n")] = '\0';
+
+            if (sscanf(line, "%s %s %d", students[i]->id, students[i]->name, &students[i]->age) != 3) {
+                free(students[i]);
+                break;
+            }
+
+        } else {
+            break;
+        }
     }
     fclose(file);
     

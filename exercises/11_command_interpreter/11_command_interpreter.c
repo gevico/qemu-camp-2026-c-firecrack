@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 
 #define MAX_ARGS 10
 #define MAX_INPUT_LENGTH 256
@@ -29,7 +30,7 @@ int main(void)
     printf("✅ Reading commands from '%s':\n\n", "command_file.txt");
 
     while (fgets(input, MAX_INPUT_LENGTH, file) != NULL) {
-        input[strcspn(input, "\n")] = '\0';
+        input[strcspn(input, "\n")] = '\0'; // 去除换行符
 
         if (strlen(input) == 0 || strspn(input, " \t") == strlen(input)) {
             continue;
@@ -56,12 +57,50 @@ int main(void)
 int shell_parse(char *buf, char *argv[])
 {
     int argc = 0;
-    int state = 0;
-    // TODO: 在这里添加你的代码，完成命令行解析
-    // 功能：将输入字符串buf按空格分割成多个参数，存入argv数组
-    // 返回：参数个数argc
-    // 提示：使用状态机的方式处理，注意处理字符串结束符
-    // I AM NOT DONE
+    int state = 0;      // 状态机: 0=空白/初始状态, 1=普通单词状态, 2=双引号字符串状态
+    char* p = buf;
+    char* word_s = NULL;
+
+    while (*p != '\0') {
+        switch (state) {
+            case 0:
+                if (*p == '"') {
+                    word_s = p + 1;
+                    state = 2;
+                } else if (!isspace(*p)) {
+                    word_s = p;
+                    state = 1;
+                }
+                break;
+            case 1:
+                if (isspace(*p)) { // 一个参数结束
+                    *p = '\0';
+                    if (argc < MAX_ARGS) {
+                        argv[argc++] = word_s;
+                    }
+                    state = 0;
+                }
+                break;
+            case 2:
+                if (*p == '"') {
+                    *p = '\0';
+                    if (argc < MAX_ARGS) {
+                        argv[argc++] = word_s;
+                    }
+                    state = 0;
+                }
+                break;
+        }
+        p++;
+    }
+
+    if (state == 1 && word_s != NULL && argc < MAX_ARGS) {
+        argv[argc++] = word_s;
+    }
+
+    if (argc <= MAX_ARGS) {
+        argv[argc] = NULL;
+    }
     return argc;
 }
 

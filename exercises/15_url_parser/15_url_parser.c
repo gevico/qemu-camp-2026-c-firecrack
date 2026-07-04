@@ -12,15 +12,41 @@
 int parse_url(const char* url) {
     int err = 0;
 
-    // TODO: 在这里添加你的代码
-    // I AM NOT DONE
+    if (url == NULL) goto exit;
+
+    const char* query = strchr(url, '?');
+    if (query == NULL) goto exit;
+
+    query++;
+
+    int len = strlen(query);
+    char* buf = (char*)malloc(len + 1);
+
+    if (buf == NULL) goto exit;
+
+    memcpy(buf, query, len);
+    buf[len] = '\0';
+
+    char* pair = strtok(buf, "&");
+
+    while(pair != NULL) {
+        char* eq = strchr(pair, '=');
+        if (eq != NULL) {
+            *eq = '\0';
+            const char* key = pair;
+            const char* val = eq + 1;
+            printf("key = %s, value = %s\n", key, val);
+        }
+        pair = strtok(NULL, "&");
+    }
+    
 
 exit:
     return err;
 }
 
 int main() {
-    const char* test_url = "https://cn.bing.com/search?name=John&age=30&city=New+York";
+    const char* test_url = "https://cn.bing.com/search?name=John&&age=30&city=New+York";
 
     printf("Parsing URL: %s\n", test_url);
     printf("Parameters:\n");

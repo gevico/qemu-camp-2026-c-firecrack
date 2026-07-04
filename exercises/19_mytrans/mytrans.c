@@ -7,8 +7,24 @@
 #include <string.h>
 
 void trim(char *str) {
-    // TODO: 在这里添加你的代码
-    // I AM NOT DONE
+    if (!str) return;
+    char* start = str;
+
+    while(*start && isspace((unsigned char)*start))
+      start++;
+
+    if (*start == '\0') {
+      *str = '\0';
+      return;
+    }
+
+    char *end = start + strlen(start) - 1;
+    while(end > start && isspace((unsigned char)*end))
+      end--;
+    *(end+1) = '\0';
+
+    if (start != str)
+      memmove(str, start, end - start  + 2);
 }
 
 int load_dictionary(const char *filename, HashTable *table,
@@ -24,8 +40,27 @@ int load_dictionary(const char *filename, HashTable *table,
   char current_translation[1024] = {0};
   int in_entry = 0;
 
-    // TODO: 在这里添加你的代码
-    // I AM NOT DONE
+  while(fgets(line, sizeof(line), file)) {
+    trim(line);
+
+    if (line[0] == '\0') continue;
+
+    if (line[0] == '#') { // 单词
+      strcpy(current_word, line + 1);
+      trim(current_word);
+      in_entry = 1;
+    } else if (strncmp(line, "Trans:", 6) == 0) {//释义
+      if (in_entry) {
+        strcpy(current_translation, line + 6);
+        trim(current_translation);
+
+        hash_table_insert(table, current_word, current_translation);
+        (*dict_count)++;
+        in_entry = 0;
+      }
+    }
+  }
+  
 
   fclose(file);
   return 0;

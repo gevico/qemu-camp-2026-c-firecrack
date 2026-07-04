@@ -10,6 +10,15 @@ void to_lowercase(char *str) {
     *str = tolower((unsigned char)*str);
 }
 
+// const char *required_strings[] = {
+//         "原文: code\t翻译: n. 码;密码;法规;法典@vt. 把...编码;制成法典@n. 代码",
+//         "原文: empowers\t未找到该单词的翻译。",
+//         "原文: individuals\t未找到该单词的翻译。",
+//         "原文: to\t翻译: prep. 到;向;趋于@ad. 向前",
+//         "原文: be\t翻译: prep. 是;有;在",
+//         "原文: creators\t未找到该单词的翻译。",
+//         "原文: in\t翻译: prep. 在;在...之内;从事于;按照;穿着@ad. 进入;朝里;在家@a. 在里面的;执政的@n. 执政者;入口"
+//     };
 int main() {
   HashTable *table = create_hash_table();
   if (!table) {
@@ -41,9 +50,20 @@ int main() {
         continue;
     }
 
-    // 使用 strtok 按空格分割单词
-    // TODO: 在这里添加你的代码
-    // I AM NOT DONE
+    char* word = strtok(line, " ");
+    while(word) {
+      to_lowercase(word);
+
+      const char* trans = hash_table_lookup(table, word);
+
+      if (trans) {
+        printf("原文: %s\t翻译: %s\n", word, trans);
+      } else {
+        printf("原文: %s\t未找到该单词的翻译。\n", word);
+      }
+
+      word = strtok(NULL, " ");
+    }
   }
 
   free_hash_table(table);
